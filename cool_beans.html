@@ -1,0 +1,2410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MADFAM Road to COO - Panel Interactivo</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Space+Mono&display=swap" rel="stylesheet">
+  <!-- GSAP para animaciones -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <!-- Chart.js para gráficos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <!-- SwiperJS para carruseles -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+  <style>
+    :root {
+      --color-amarillo-solar: #FFC107;
+      --color-verde-sostenible: #4CAF50;
+      --color-purpura-creativo: #663399;
+      --color-azul-tecnologico: #2196F3;
+      --color-gris-obsidiana: #212121;
+      --color-background: #0f0f14;
+      --color-card: #1a1a24;
+      --color-text: #e0e0e0;
+      --color-text-secondary: #aaaaaa;
+      --color-accent: #4CAF50;
+      --color-accent-hover: #3e8e41;
+      --color-secondary: #FFC107;
+      --color-tertiary: #2196F3;
+      --color-error: #cf6679;
+      --color-success: #4CAF50;
+      --color-warning: #FFC107;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--color-background);
+      color: var(--color-text);
+      line-height: 1.6;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    /* Estilos de tarjetas */
+    .card {
+      background-color: var(--color-card);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Navbars y menús */
+    .navbar {
+      background-color: var(--color-card);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Botones */
+    .btn {
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: none;
+    }
+
+    .btn-primary {
+      background-color: var(--color-accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--color-accent-hover);
+    }
+
+    .btn-secondary {
+      background-color: var(--color-secondary);
+      color: var(--color-gris-obsidiana);
+    }
+
+    .btn-secondary:hover {
+      background-color: #e5ac00;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--color-accent);
+      color: var(--color-accent);
+    }
+
+    .btn-outline:hover {
+      background-color: var(--color-accent);
+      color: white;
+    }
+
+    /* Transiciones y animaciones */
+    .fade-in {
+      animation: fadeIn 1s ease forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Secciones */
+    .section {
+      padding: 80px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .section-hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      background: linear-gradient(130deg, #0f0f14 0%, #1a1a24 100%);
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      display: inline-block;
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      width: 60px;
+      height: 4px;
+      background-color: var(--color-accent);
+      bottom: -10px;
+      left: 0;
+    }
+
+    /* Timeline */
+    .timeline {
+      position: relative;
+      padding: 40px 0;
+    }
+
+    .timeline-track {
+      position: relative;
+      padding-top: 20px;
+      padding-bottom: 20px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      display: flex;
+      gap: 20px;
+    }
+
+    .timeline-track::before {
+      content: '';
+      position: absolute;
+      height: 2px;
+      background: var(--color-text-secondary);
+      top: 50%;
+      left: 0;
+      right: 0;
+      transform: translateY(-50%);
+      z-index: -1;
+    }
+
+    .timeline-item {
+      min-width: 280px;
+      scroll-snap-align: start;
+      padding: 20px;
+      position: relative;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: var(--color-accent);
+      border-radius: 50%;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%) translateY(-50%);
+      z-index: 1;
+    }
+
+    /* To-Do List */
+    .todo-sidebar {
+      width: 350px;
+      height: 100%;
+      background-color: var(--color-card);
+      position: fixed;
+      right: -350px;
+      top: 0;
+      padding: 20px;
+      transition: right 0.3s ease;
+      z-index: 1000;
+      overflow-y: auto;
+    }
+
+    .todo-sidebar.open {
+      right: 0;
+    }
+
+    .todo-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+      display: none;
+    }
+
+    .todo-overlay.active {
+      display: block;
+    }
+
+    .todo-item {
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      background-color: rgba(255, 255, 255, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .todo-item.completed {
+      opacity: 0.6;
+      text-decoration: line-through;
+    }
+
+    /* Modales */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1100;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .modal.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      width: 90%;
+      max-width: 500px;
+      background-color: var(--color-card);
+      border-radius: 10px;
+      padding: 30px;
+      position: relative;
+      transform: translateY(-20px);
+      transition: transform 0.3s ease;
+    }
+
+    .modal.active .modal-content {
+      transform: translateY(0);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      cursor: pointer;
+      font-size: 24px;
+    }
+
+    /* Formularios */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid var(--color-text-secondary);
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--color-text);
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    /* Gráficos y panels */
+    .chart-container {
+      background: var(--color-card);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    /* Utilidades */
+    .text-gradient {
+      background: linear-gradient(90deg, var(--color-accent) 0%, var(--color-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+
+    .progress-bar-inner {
+      height: 100%;
+      background-color: var(--color-accent);
+      border-radius: 4px;
+      width: 0;
+      transition: width 1s ease;
+    }
+
+    /* Swipers y carousel */
+    .swiper {
+      width: 100%;
+      padding-bottom: 40px;
+    }
+
+    .swiper-pagination-bullet {
+      background: var(--color-text-secondary);
+    }
+
+    .swiper-pagination-bullet-active {
+      background: var(--color-accent);
+    }
+
+    .quote-banner {
+      background: linear-gradient(90deg, var(--color-accent) 0%, var(--color-secondary) 100%);
+      padding: 30px 20px;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--color-background);
+      margin: 40px 0;
+    }
+
+    /* Estilos para el curriculum vivo */
+    .cv-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .cv-table th,
+    .cv-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .cv-table th {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Glosario */
+    .glossary-item {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 15px 0;
+    }
+
+    .glossary-term {
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .glossary-definition {
+      margin-top: 10px;
+      display: none;
+      padding: 10px;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+    }
+
+    .glossary-item.active .glossary-definition {
+      display: block;
+    }
+
+    /* Kickstarter section */
+    .kickstarter-package {
+      background-color: var(--color-card);
+      padding: 25px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      transform-style: preserve-3d;
+      perspective: 1000px;
+    }
+
+    .kickstarter-package:hover {
+      transform: rotateY(5deg) translateZ(20px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .section {
+        padding: 60px 0;
+      }
+
+      .section-title {
+        font-size: 2rem;
+      }
+
+      .quote-banner {
+        font-size: 1.2rem;
+        padding: 20px;
+      }
+
+      .todo-sidebar {
+        width: 300px;
+        right: -300px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .section {
+        padding: 40px 0;
+      }
+
+      .section-title {
+        font-size: 1.7rem;
+      }
+
+      .quote-banner {
+        font-size: 1rem;
+        padding: 15px;
+      }
+
+      .todo-sidebar {
+        width: 280px;
+        right: -280px;
+      }
+    }
+
+    /* Navegación flotante */
+    .floating-nav {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 900;
+    }
+
+    .floating-nav-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: var(--color-accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .floating-nav-btn:hover {
+      transform: scale(1.1);
+      background-color: var(--color-accent-hover);
+    }
+
+    /* ScrollBar personalizado */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--color-background);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--color-accent);
+      border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--color-accent-hover);
+    }
+
+    /* Animaciones de background */
+    .animated-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .animated-bg .shape {
+      position: absolute;
+      border-radius: 50%;
+      background: linear-gradient(45deg, var(--color-accent), var(--color-secondary));
+      opacity: 0.1;
+      filter: blur(30px);
+      animation: moveAround 20s linear infinite;
+    }
+
+    .animated-bg .shape:nth-child(1) {
+      width: 400px;
+      height: 400px;
+      top: -100px;
+      left: -100px;
+      animation-delay: 0s;
+    }
+
+    .animated-bg .shape:nth-child(2) {
+      width: 300px;
+      height: 300px;
+      top: 50%;
+      right: -150px;
+      animation-delay: -5s;
+    }
+
+    .animated-bg .shape:nth-child(3) {
+      width: 200px;
+      height: 200px;
+      bottom: -100px;
+      left: 30%;
+      animation-delay: -10s;
+    }
+
+    @keyframes moveAround {
+      0% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(10%, 10%) scale(1.1); }
+      50% { transform: translate(0, 20%) scale(1); }
+      75% { transform: translate(-10%, 10%) scale(0.9); }
+      100% { transform: translate(0, 0) scale(1); }
+    }
+
+    /* Tooltip */
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+
+    .tooltip .tooltip-text {
+      visibility: hidden;
+      width: 200px;
+      background-color: var(--color-gris-obsidiana);
+      color: var(--color-text);
+      text-align: center;
+      border-radius: 6px;
+      padding: 10px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      font-size: 0.9rem;
+    }
+
+    .tooltip:hover .tooltip-text {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .tooltip .tooltip-text::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: var(--color-gris-obsidiana) transparent transparent transparent;
+    }
+
+    /* Dropdown menu */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: var(--color-card);
+      min-width: 160px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      z-index: 1;
+      border-radius: 6px;
+    }
+
+    .dropdown-content a {
+      color: var(--color-text);
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      transition: all 0.2s;
+    }
+
+    .dropdown-content a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    /* 3D hover effect */
+    .hover-3d {
+      transition: all 0.3s ease;
+      transform-style: preserve-3d;
+      perspective: 1000px;
+    }
+
+    .hover-3d:hover {
+      transform: rotateX(5deg) rotateY(5deg) scale(1.05);
+    }
+  </style>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            amarilloSolar: '#FFC107',
+            verdeSostenible: '#4CAF50',
+            purpuraCreativo: '#663399',
+            azulTecnologico: '#2196F3',
+            grisObsidiana: '#212121',
+          },
+          fontFamily: {
+            poppins: ['Poppins', 'sans-serif'],
+            mono: ['Space Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar flex justify-between items-center px-4 py-3">
+    <a href="#" class="flex items-center space-x-2">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="8" height="8" fill="#FFC107" rx="2"/>
+        <rect x="14" y="2" width="8" height="8" fill="#4CAF50" rx="2"/>
+        <rect x="2" y="14" width="8" height="8" fill="#2196F3" rx="2"/>
+        <rect x="14" y="14" width="8" height="8" fill="#663399" rx="2"/>
+      </svg>
+      <span class="font-bold text-xl">MADFAM</span>
+    </a>
+    <div class="hidden md:flex space-x-6">
+      <a href="#que-es-madfam" class="hover:text-verdeSostenible transition-colors">¿Qué es MADFAM?</a>
+      <a href="#tu-rol" class="hover:text-verdeSostenible transition-colors">Tu Rol</a>
+      <a href="#timeline" class="hover:text-verdeSostenible transition-colors">Timeline</a>
+      <a href="#kpis" class="hover:text-verdeSostenible transition-colors">KPIs</a>
+    </div>
+    <div class="flex items-center space-x-2">
+      <button id="todoBtn" class="btn btn-primary">
+        <i data-lucide="check-square"></i>
+        <span class="hidden md:inline">Tareas</span>
+      </button>
+      <div class="dropdown">
+        <button class="btn btn-outline">
+          <i data-lucide="user"></i>
+          <span class="hidden md:inline">Tu Perfil</span>
+        </button>
+        <div class="dropdown-content">
+          <a href="#curriculum">Curriculum</a>
+          <a href="#glosario">Glosario</a>
+          <a href="#kickstarter">Kickstarter</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="que-es-madfam" class="section section-hero">
+    <div class="animated-bg">
+      <div class="shape"></div>
+      <div class="shape"></div>
+      <div class="shape"></div>
+    </div>
+    <div class="container mx-auto px-4 py-20">
+      <div class="flex flex-col md:flex-row items-center">
+        <div class="md:w-1/2 mb-10 md:mb-0">
+          <h1 class="text-4xl md:text-5xl font-bold mb-6 fade-in">Manufactura Aditiva, Digitalización y Fabricación Avanzada Multimaterial</h1>
+          <p class="text-xl mb-8 text-text-secondary fade-in" style="animation-delay: 0.2s;">
+            MADFAM es una microempresa mexicana dedicada a la innovación en manufactura aditiva, combinando tecnologías de impresión 3D, digitalización y trabajo con múltiples materiales para crear soluciones sostenibles de alto impacto.
+          </p>
+          <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 fade-in" style="animation-delay: 0.4s;">
+            <a href="#tu-rol" class="btn btn-primary">Descubre tu rol evolutivo</a>
+            <a href="#timeline" class="btn btn-outline">Ver timeline</a>
+          </div>
+        </div>
+        <div class="md:w-1/2 flex justify-center fade-in" style="animation-delay: 0.6s;">
+          <div class="relative">
+            <div class="h-64 w-64 rounded-full bg-gradient-to-r from-verdeSostenible to-amarilloSolar opacity-20 absolute top-0 left-0 animate-pulse"></div>
+            <div class="card p-8 z-10 relative">
+              <h3 class="font-bold text-xl mb-4">Visión Solarpunk</h3>
+              <p class="text-text-secondary mb-6">
+                "Ser referentes en la innovación sostenible de LATAM combinando IA, fabricación y responsabilidad ambiental"
+              </p>
+              <h4 class="font-bold mb-2">3 Plataformas Clave:</h4>
+              <ul class="space-y-3">
+                <li class="flex items-start space-x-2">
+                  <span class="text-amarilloSolar"><i data-lucide="database"></i></span>
+                  <div>
+                    <span class="font-bold">SPARK</span>
+                    <p class="text-sm text-text-secondary">Plataforma de gestión interna para planificación, bases de datos y visualización de análisis.</p>
+                  </div>
+                </li>
+                <li class="flex items-start space-x-2">
+                  <span class="text-verdeSostenible"><i data-lucide="bot"></i></span>
+                  <div>
+                    <span class="font-bold">PENNY</span>
+                    <p class="text-sm text-text-secondary">Agentes de inteligencia artificial para asistencia, automatización y generación de insights.</p>
+                  </div>
+                </li>
+                <li class="flex items-start space-x-2">
+                  <span class="text-azulTecnologico"><i data-lucide="graduation-cap"></i></span>
+                  <div>
+                    <span class="font-bold">Open-edX</span>
+                    <p class="text-sm text-text-secondary">Academia de formación para talento interno y externos con cursos especializados.</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quote Banner 1 -->
+  <div class="quote-banner">
+    "Innovar es tejer futuro con luz solar."
+  </div>
+
+<!-- Tu Rol Evolutivo -->
+<section id="tu-rol" class="section">
+    <div class="container mx-auto px-4">
+        <h2 class="section-title">Tu Rol Evolutivo</h2>
+        <div class="swiper roleSwiper">
+        <div class="swiper-wrapper">
+            <!-- Card 1: Voluntaria -->
+            <div class="swiper-slide">
+            <div class="card hover-3d h-full">
+                <div class="card-content">
+                <div class="text-center mb-6">
+                    <div class="inline-flex items-center justify-center h-16 w-16 rounded-full bg-amarilloSolar bg-opacity-20 mb-4">
+                    <i data-lucide="sparkles" class="text-amarilloSolar"></i>
+                    </div>
+                    <h3 class="text-xl font-bold">Voluntaria</h3>
+                    <p class="text-sm text-text-secondary">Semanas 1-26</p>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                    <h4 class="font-bold text-verdeSostenible mb-1">Misión</h4>
+                    <p class="text-sm">Aprender los fundamentos de operaciones y BD mientras apoyas en tareas específicas de implementación.</p>
+                    </div>
+                    <div>
+                    <h4 class="font-bold text-verdeSostenible mb-1">Competencias Core</h4>
+                    <ul class="text-sm list-disc pl-5 space-y-1">
+                        <li>Gestión básica de infraestructura digital</li>
+                        <li>Configuración de plataformas de e-learning</li>
+                        <li>Creación de contenido inicial</li>
+                        <li>Apoyo en automatización de procesos</li>
+                    </ul>
+                    </div>
+                    <div>
+                    <h4 class="font-bold text-verdeSostenible mb-1">Criterios de Ascenso</h4>
+                    <ul class="text-sm list-disc pl-5 space-y-1">
+                        <li>Infraestructura completamente operativa</li>
+                        <li>5 productos publicados en WooCommerce</li>
+                        <li>3 cursos completos en Open edX</li>
+                        <li>Automatización funcional de accesos con n8n</li>
+                    </ul>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+            
+            <!-- Card 2: Coordinadora Ops & BD -->
+            <div class="swiper-slide">
+            <div class="card hover-3d h-full">
+                <div class="card-content">
+                <div class="text-center mb-6">
+                    <div class="inline-flex items-center justify-center h-16 w-16 rounded-full bg-verdeSostenible bg-opacity-20 mb-4">
+                    <i data-lucide="briefcase" class="text-verdeSostenible"></i>
+                    </div>
+                    <h3 class="text-xl font-bold">Coordinadora Ops & BD</h3>
+                    <p class="text-sm text-text-secondary">Semanas 27-104</p>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                    <h4 class="font-bold text-verdeSostenible mb-1">Misión</h4>
+                    <p class="text-sm">Gestionar operaciones y estrategias de desarrollo de negocio, optimizando campañas y formalizando aspectos financieros.</p>
+                    </div>
+                    <div>
+                    <h4 class="font-bold text-verdeSostenible mb-1">Competencias Core</h4>
+                    <ul class="text-sm list-disc pl-5 space-y-1">
+                        <li>Gestión de campañas de marketing</li>
+                        <li>Optimización de ventas</li>
+                        <li>Análisis de métricas clave</li>
+                        <li>Formalización financiera</li>
+                        <li>Gestión de equipos pequeños</li>
+                    </ul>
+                    </div>
+                    <div>
+                    <h4 class="font-bold text-verdeSostenible mb-1">Criterios de Ascenso</h4>
+                    <ul class="text-sm list-disc pl-5 space-y-1">
+                        <li>CAC < 30% del valor del producto</li>
+                        <li>EBITDA positivo</li>
+                        <li>Procesos documentados</li>
+                        <li>Estructura de compensaciones definida</li>
+                    </ul>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+            
+            <!-- Card 3: Directora -->
+            <div class="swiper-slide">
+            <div class="card hover-3d h-full">
+                <div class="card-content">
+                <div class="text-center mb-6">
+                    <div class="inline-flex items-center justify-center h-16 w-16 rounded-full bg-azulTecnologico bg-opacity-20 mb-4">
+                    <i data-lucide="award" class="text-azulTecnologico"></i>
+                    </div>
+                    <h3 class="text-xl font-bold">Directora</h3>
+                    <p class="text-sm text-text-secondary">Semanas 105-208</p>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                    <h4 class="font-bold text-verdeSostenible mb-1">Misión</h4>
+                    <p class="text-sm">Liderar la expansión y escalabilidad del negocio, implementando innovaciones clave y desarrollando estrategias a largo plazo.</p>
+                    </div>
+                    <div>
+                    <h4 class="font-bold text-verdeSostenible mb-1">Competencias Core</h4>
+                    <ul class="text-sm list-disc pl-5 space-y-1">
+                        <li>Desarrollo de estrategia empresarial</li>
+                        <li>Gestión de innovación</li>
+                        <li>Dirección de equipos multidisciplinarios</li>
+                        <li>Optimización de operaciones a escala</li>
+                        <li>Análisis financiero avanzado</li>
+                    </ul>
+                    </div>
+                    <div>
+                    <h4 class="font-bold text-verdeSostenible mb-1">Criterios de Ascenso</h4>
+                    <ul class="text-sm list-disc pl-5 space-y-1">
+                        <li>Implementación de 2+ innovaciones clave</li>
+                        <li>Aumento de ventas del 30%</li>
+                        <li>Expansión a nuevos mercados</li>
+                        <li>Plan estratégico a 5 años aprobado</li>
+                    </ul>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+            
+            <!-- Card 4: COO + Socia -->
+            <div class="swiper-slide">
+            <div class="card hover-3d h-full">
+                <div class="card-content">
+                <div class="text-center mb-6">
+                    <div class="inline-flex items-center justify-center h-16 w-16 rounded-full bg-purpuraCreativo bg-opacity-20 mb-4">
+                    <i data-lucide="crown" class="text-purpuraCreativo"></i>
+                    </div>
+                    <h3 class="text-xl font-bold">COO + Socia</h3>
+                    <p class="text-sm text-text-secondary">Semanas 209-260+</p>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                    <h4 class="font-bold text-verdeSostenible mb-1">Misión</h4>
+                    <p class="text-sm">Dirigir operaciones a nivel estratégico como socia de MADFAM, participando en la toma de decisiones clave y en el reparto de beneficios.</p>
+                    </div>
+                    <div>
+                    <h4 class="font-bold text-verdeSostenible mb-1">Competencias Core</h4>
+                    <ul class="text-sm list-disc pl-5 space-y-1">
+                        <li>Liderazgo ejecutivo</li>
+                        <li>Visión estratégica de largo plazo</li>
+                        <li>Gestión de partnerships y alianzas</li>
+                        <li>Desarrollo organizacional</li>
+                        <li>Innovación disruptiva</li>
+                    </ul>
+                    </div>
+                    <div>
+                    <h4 class="font-bold text-verdeSostenible mb-1">Beneficios</h4>
+                    <ul class="text-sm list-disc pl-5 space-y-1">
+                        <li>Participación accionaria en MADFAM</li>
+                        <li>Toma de decisiones a nivel ejecutivo</li>
+                        <li>Distribución de utilidades</li>
+                        <li>Reconocimiento como líder del sector</li>
+                    </ul>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="swiper-pagination"></div>
+        </div>
+    </div>
+    </section>
+
+    <!-- Quote Banner 2 -->
+    <div class="quote-banner">
+    "Cada prototipo sostenible es un paso a la utopía pragmática."
+    </div>
+
+    <!-- Timeline Section -->
+    <section id="timeline" class="section">
+    <div class="container mx-auto px-4">
+        <h2 class="section-title">Timeline Evolutivo</h2>
+        <h3 class="text-xl font-bold mt-10 mb-4">Tu Camino a COO</h3>
+        
+        <!-- Timeline 0-6 meses -->
+        <div class="mb-12">
+        <h4 class="text-lg font-semibold mb-4 flex items-center">
+            <i data-lucide="calendar" class="mr-2 text-verdeSostenible"></i>
+            Semana 1-26
+        </h4>
+        <div class="timeline">
+            <div class="timeline-track" id="timeline-track-1">
+            <!-- Timeline Items 0-6 meses -->
+            <div class="timeline-item card">
+                <span class="text-xs text-text-secondary">Semana 1-2</span>
+                <h5 class="font-bold mb-2">Compra e instalación de hosting en A2 y configuración de dominio en Porkbun.</h5>
+                <div class="flex items-center space-x-2 text-xs mb-2">
+                <span class="bg-amarilloSolar text-grisObsidiana px-2 py-1 rounded">Infraestructura</span>
+                </div>
+                <p class="text-sm text-text-secondary mb-3">Configuración inicial de la infraestructura digital necesaria para los sistemas MADFAM.</p>
+                <div class="tooltip">
+                <div class="flex items-center space-x-1 text-xs text-verdeSostenible">
+                    <i data-lucide="target" class="h-4 w-4"></i>
+                    <span>KPI: Infraestructura digital 100% operativa</span>
+                </div>
+                <span class="tooltip-text">Asegúrate de verificar que el uptime sea >99% tras la configuración inicial.</span>
+                </div>
+            </div>
+            
+            <div class="timeline-item card">
+                <span class="text-xs text-text-secondary">Semana 3-4</span>
+                <h5 class="font-bold mb-2">Instalación de Open edX y Astro + Strapi + MedusaJS.</h5>
+                <div class="flex items-center space-x-2 text-xs mb-2">
+                <span class="bg-azulTecnologico text-white px-2 py-1 rounded">Plataformas</span>
+                </div>
+                <p class="text-sm text-text-secondary mb-3">Configuración de las plataformas principales de e-learning y e-commerce.</p>
+                <div class="tooltip">
+                <div class="flex items-center space-x-1 text-xs text-verdeSostenible">
+                    <i data-lucide="target" class="h-4 w-4"></i>
+                    <span>KPI: Plataformas configuradas y accesibles</span>
+                </div>
+                <span class="tooltip-text">Verifica que ambas plataformas sean responsivas y funcionen en móviles y tablets.</span>
+                </div>
+            </div>
+            
+            <div class="timeline-item card">
+                <span class="text-xs text-text-secondary">Semana 5-12</span>
+                <h5 class="font-bold mb-2">Creación de catálogo en WooCommerce y configuración de métodos de pago.</h5>
+                <div class="flex items-center space-x-2 text-xs mb-2">
+                <span class="bg-purpuraCreativo text-white px-2 py-1 rounded">E-commerce</span>
+                </div>
+                <p class="text-sm text-text-secondary mb-3">Desarrollo del catálogo de productos y habilitación de pasarelas de pago Stripe y BBVA PyME.</p>
+                <div class="tooltip">
+                <div class="flex items-center space-x-1 text-xs text-verdeSostenible">
+                    <i data-lucide="target" class="h-4 w-4"></i>
+                    <span>KPI: 5 productos publicados con checkout funcional</span>
+                </div>
+                <span class="tooltip-text">Incluye pruebas de compra completas en ambos métodos de pago antes de lanzamiento.</span>
+                </div>
+            </div>
+            
+            <div class="timeline-item card">
+                <span class="text-xs text-text-secondary">Semana 13-26</span>
+                <h5 class="font-bold mb-2">Creación de cursos en Open edX y automatización con n8n.</h5>
+                <div class="flex items-center space-x-2 text-xs mb-2">
+                <span class="bg-verdeSostenible text-white px-2 py-1 rounded">E-learning</span>
+                <span class="bg-amarilloSolar text-grisObsidiana px-2 py-1 rounded">Automatización</span>
+                </div>
+                <p class="text-sm text-text-secondary mb-3">Desarrollo de contenido educativo y configuración de flujos automatizados de registro.</p>
+                <div class="tooltip">
+                <div class="flex items-center space-x-1 text-xs text-verdeSostenible">
+                    <i data-lucide="target" class="h-4 w-4"></i>
+                    <span>KPI: 3 cursos completos con acceso automatizado</span>
+                </div>
+                <span class="tooltip-text">Recuerda: ¡NPS > 45 = fans, no clientes!</span>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+        
+        <!-- Timeline 6-24 meses -->
+        <div class="mb-12">
+        <h4 class="text-lg font-semibold mb-4 flex items-center">
+            <i data-lucide="calendar" class="mr-2 text-verdeSostenible"></i>
+            Semanas 27-104
+        </h4>
+        <div class="timeline">
+            <div class="timeline-track" id="timeline-track-2">
+            <!-- Timeline Items 6-24 meses -->
+            <div class="timeline-item card">
+                <span class="text-xs text-text-secondary">Semana 27-52</span>
+                <h5 class="font-bold mb-2">Creación de contenido para redes sociales y configuración de campañas.</h5>
+                <div class="flex items-center space-x-2 text-xs mb-2">
+                <span class="bg-purpuraCreativo text-white px-2 py-1 rounded">Marketing</span>
+                </div>
+                <p class="text-sm text-text-secondary mb-3">Desarrollo de estrategia de contenido y configuración de campañas en Facebook e Instagram.</p>
+                <div class="tooltip">
+                <div class="flex items-center space-x-1 text-xs text-verdeSostenible">
+                    <i data-lucide="target" class="h-4 w-4"></i>
+                    <span>KPI: 50 publicaciones programadas, 1000 seguidores</span>
+                </div>
+                <span class="tooltip-text">La consistencia es clave: mantén un calendario editorial estricto.</span>
+                </div>
+            </div>
+            
+            <div class="timeline-item card">
+                <span class="text-xs text-text-secondary">Semana 53-78</span>
+                <h5 class="font-bold mb-2">Optimización de campañas publicitarias y ventas.</h5>
+                <div class="flex items-center space-x-2 text-xs mb-2">
+                <span class="bg-amarilloSolar text-grisObsidiana px-2 py-1 rounded">Conversión</span>
+                </div>
+                <p class="text-sm text-text-secondary mb-3">Análisis y mejora continua de campañas, recogida de testimonios y establecimiento de promociones.</p>
+                <div class="tooltip">
+                <div class="flex items-center space-x-1 text-xs text-verdeSostenible">
+                    <i data-lucide="target" class="h-4 w-4"></i>
+                    <span>KPI: CAC < 30% del valor del producto</span>
+                </div>
+                <span class="tooltip-text">Monitorea los costos de adquisición semanalmente para optimizar rápidamente.</span>
+                </div>
+            </div>
+            
+            <div class="timeline-item card">
+                <span class="text-xs text-text-secondary">Semana 79-104</span>
+                <h5 class="font-bold mb-2">Formalización financiera y contable, declaraciones de ingresos.</h5>
+                <div class="flex items-center space-x-2 text-xs mb-2">
+                <span class="bg-azulTecnologico text-white px-2 py-1 rounded">Finanzas</span>
+                </div>
+                <p class="text-sm text-text-secondary mb-3">Establecimiento de procesos contables, relación con SAT y sistematización de declaraciones.</p>
+                <div class="tooltip">
+                <div class="flex items-center space-x-1 text-xs text-verdeSostenible">
+                    <i data-lucide="target" class="h-4 w-4"></i>
+                    <span>KPI: EBITDA positivo, procesos documentados</span>
+                </div>
+                <span class="tooltip-text">La documentación detallada de procesos facilita el crecimiento del equipo.</span>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+        
+        <!-- Timeline 2-5 años -->
+        <div>
+        <h4 class="text-lg font-semibold mb-4 flex items-center">
+            <i data-lucide="calendar" class="mr-2 text-verdeSostenible"></i>
+            Semana 105-260
+        </h4>
+        <div class="timeline">
+            <div class="timeline-track" id="timeline-track-3">
+            <!-- Timeline Items 2-5 años -->
+            <div class="timeline-item card">
+                <span class="text-xs text-text-secondary">Semana 105-156</span>
+                <h5 class="font-bold mb-2">Desarrollo de estructura de compensaciones e incentivos.</h5>
+                <div class="flex items-center space-x-2 text-xs mb-2">
+                <span class="bg-verdeSostenible text-white px-2 py-1 rounded">Compensaciones</span>
+                </div>
+                <p class="text-sm text-text-secondary mb-3">Diseño e implementación de esquemas de participación accionaria y bonificaciones por objetivos.</p>
+                <div class="tooltip">
+                <div class="flex items-center space-x-1 text-xs text-verdeSostenible">
+                    <i data-lucide="target" class="h-4 w-4"></i>
+                    <span>KPI: Esquema de participación 5-10-20%</span>
+                </div>
+                <span class="tooltip-text">La equidad es fundamental para retener talento a largo plazo.</span>
+                </div>
+            </div>
+            
+            <div class="timeline-item card">
+                <span class="text-xs text-text-secondary">Semana 157-208</span>
+                <h5 class="font-bold mb-2">Implementación de 2 innovaciones clave en producto o servicio.</h5>
+                <div class="flex items-center space-x-2 text-xs mb-2">
+                <span class="bg-purpuraCreativo text-white px-2 py-1 rounded">Innovación</span>
+                </div>
+                <p class="text-sm text-text-secondary mb-3">Desarrollo y lanzamiento de productos o servicios disruptivos para ampliar el mercado.</p>
+                <div class="tooltip">
+                <div class="flex items-center space-x-1 text-xs text-verdeSostenible">
+                    <i data-lucide="target" class="h-4 w-4"></i>
+                    <span>KPI: Aumento de ventas del 30%</span>
+                </div>
+                <span class="tooltip-text">La innovación debe generar resultados medibles, no solo ser "interesante".</span>
+                </div>
+            </div>
+            
+            <div class="timeline-item card">
+                <span class="text-xs text-text-secondary">Semana 209-260</span>
+                <h5 class="font-bold mb-2">Preparación para rol de COO, certificación y presentación de propuesta.</h5>
+                <div class="flex items-center space-x-2 text-xs mb-2">
+                <span class="bg-amarilloSolar text-grisObsidiana px-2 py-1 rounded">Liderazgo</span>
+                </div>
+                <p class="text-sm text-text-secondary mb-3">Consolidación de liderazgo, adquisición de certificaciones relevantes y desarrollo de plan estratégico.</p>
+                <div class="tooltip">
+                <div class="flex items-center space-x-1 text-xs text-verdeSostenible">
+                    <i data-lucide="target" class="h-4 w-4"></i>
+                    <span>KPI: Plan estratégico a 5 años aprobado</span>
+                </div>
+                <span class="tooltip-text">Tu visión debe equilibrar ambición y pragmatismo, inspiración y ejecución.</span>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+        
+        <div class="mt-8 text-center">
+        <button id="addHitoBtn" class="btn btn-primary">
+            <i data-lucide="plus-circle"></i>
+            Añadir Hito
+        </button>
+        </div>
+    </div>
+    </section>
+
+    <!-- Quote Banner 3 -->
+    <div class="quote-banner">
+    "Excelencia operativa: donde el detalle se vuelve cultura."
+    </div>
+
+  <!-- Panel OKR & KPI -->
+  <section id="kpis" class="section">
+    <div class="container mx-auto px-4">
+      <h2 class="section-title">Panel OKR & KPI</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+        <!-- Chart 1: Ingresos -->
+        <div class="chart-container">
+          <h3 class="font-bold mb-4">Ingresos Mensuales</h3>
+          <canvas id="ingresos-chart"></canvas>
+        </div>
+        
+        <!-- Chart 2: CAC -->
+        <div class="chart-container">
+          <h3 class="font-bold mb-4">Costo de Adquisición de Clientes (CAC)</h3>
+          <canvas id="cac-chart"></canvas>
+        </div>
+        
+        <!-- Chart 3: NPS -->
+        <div class="chart-container">
+          <h3 class="font-bold mb-4">Net Promoter Score (NPS)</h3>
+          <canvas id="nps-chart"></canvas>
+        </div>
+        
+        <!-- Chart 4: Uptime -->
+        <div class="chart-container">
+          <h3 class="font-bold mb-4">Uptime Plataformas</h3>
+          <canvas id="uptime-chart"></canvas>
+        </div>
+        
+        <!-- Chart 5: Cursos Finalizados -->
+        <div class="chart-container">
+          <h3 class="font-bold mb-4">% Cursos Finalizados</h3>
+          <div class="relative pt-1">
+            <div class="flex items-center justify-between mb-2">
+              <div>
+                <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full bg-verdeSostenible bg-opacity-20 text-verdeSostenible">
+                  Progreso
+                </span>
+              </div>
+              <div class="text-right">
+                <span class="text-xs font-semibold inline-block text-verdeSostenible">
+                  35%
+                </span>
+              </div>
+            </div>
+            <div class="h-2 overflow-hidden text-xs flex rounded bg-verdeSostenible bg-opacity-20">
+              <div style="width:35%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-verdeSostenible"></div>
+            </div>
+            <p class="mt-2 text-xs text-text-secondary">Meta: 75%</p>
+          </div>
+        </div>
+        
+        <!-- Actualizar JSON -->
+        <div class="chart-container flex flex-col justify-center">
+          <h3 class="font-bold mb-4">Actualización de Datos</h3>
+          <p class="text-sm text-text-secondary mb-4">Actualiza la información de KPIs cargando un nuevo conjunto de datos.</p>
+          <button id="updateJsonBtn" class="btn btn-outline">
+            <i data-lucide="refresh-cw"></i>
+            Actualizar JSON
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Curriculum Vivo -->
+  <section id="curriculum" class="section">
+    <div class="container mx-auto px-4">
+      <h2 class="section-title">Curriculum Vivo</h2>
+      <p class="mb-6 text-text-secondary">Registra tus habilidades y certificados adquiridos durante tu camino a COO. Haz clic en cualquier celda para editar.</p>
+      
+      <div class="overflow-x-auto">
+        <table class="cv-table">
+          <thead>
+            <tr>
+              <th>Skill / Certificación</th>
+              <th>Nivel / Emisor</th>
+              <th>Fecha</th>
+              <th>Evidencia</th>
+            </tr>
+          </thead>
+          <tbody id="cvTableBody">
+            <tr>
+              <td contenteditable="true">Canvas LMS Administration</td>
+              <td contenteditable="true">Intermedio</td>
+              <td contenteditable="true">Mayo 2025</td>
+              <td contenteditable="true"><a href="#" class="text-verdeSostenible">Ver Certificado</a></td>
+            </tr>
+            <tr>
+              <td contenteditable="true">WordPress & WooCommerce</td>
+              <td contenteditable="true">Avanzado</td>
+              <td contenteditable="true">Junio 2025</td>
+              <td contenteditable="true"><a href="#" class="text-verdeSostenible">Ver Certificado</a></td>
+            </tr>
+            <tr>
+              <td contenteditable="true">n8n Workflow Automation</td>
+              <td contenteditable="true">Intermedio</td>
+              <td contenteditable="true">Julio 2025</td>
+              <td contenteditable="true"><a href="#" class="text-verdeSostenible">Ver Certificado</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="mt-6 text-center">
+        <button id="addCertificateBtn" class="btn btn-primary">
+          <i data-lucide="plus-circle"></i>
+          Añadir Certificado
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Glosario -->
+  <section id="glosario" class="section">
+    <div class="container mx-auto px-4">
+      <h2 class="section-title">Glosario MADFAM</h2>
+      <p class="mb-6 text-text-secondary">Terminología clave para tu desarrollo en MADFAM. Haz clic en cada término para ver su definición.</p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="glossary-column">
+          <!-- Glosario primera columna -->
+          <div class="glossary-item">
+            <div class="glossary-term">
+              <span>MADFAM</span>
+              <i data-lucide="chevron-down" class="h-5 w-5"></i>
+            </div>
+            <div class="glossary-definition">
+              <p><strong>Manufactura Aditiva, Digitalización y Fabricación Avanzada Multimaterial</strong>. Microempresa mexicana especializada en soluciones de fabricación digital con enfoque solarpunk.</p>
+              <p class="text-sm text-text-secondary mt-2">Uso: "MADFAM está revolucionando la manufactura sostenible en LATAM".</p>
+            </div>
+          </div>
+          
+          <div class="glossary-item">
+            <div class="glossary-term">
+              <span>SPARK</span>
+              <i data-lucide="chevron-down" class="h-5 w-5"></i>
+            </div>
+            <div class="glossary-definition">
+              <p><strong>Synergistic Planning & Actionable Reflective Knowledgebase</strong>. Plataforma interna de MADFAM para gestión, bases de datos y visualización de análisis.</p>
+              <p class="text-sm text-text-secondary mt-2">Uso: "Consulta los KPIs actualizados en SPARK para tomar decisiones".</p>
+            </div>
+          </div>
+          
+          <div class="glossary-item">
+            <div class="glossary-term">
+              <span>PENNY</span>
+              <i data-lucide="chevron-down" class="h-5 w-5"></i>
+            </div>
+            <div class="glossary-definition">
+              <p><strong>Proactive Empowerment Navigator Nurturing Yield</strong>. Agentes IA para asistencia, automatización y generación de insights en MADFAM.</p>
+              <p class="text-sm text-text-secondary mt-2">Uso: "PENNY te recordará las tareas pendientes y analizará los patrones de venta".</p>
+            </div>
+          </div>
+          
+          <div class="glossary-item">
+            <div class="glossary-term">
+              <span>LMS</span>
+              <i data-lucide="chevron-down" class="h-5 w-5"></i>
+            </div>
+            <div class="glossary-definition">
+              <p><strong>Learning Management System</strong>. Sistema de gestión de aprendizaje para crear, entregar y administrar contenido educativo.</p>
+              <p class="text-sm text-text-secondary mt-2">Uso: "Open edX es la plataforma que utilizamos para nuestros cursos".</p>
+            </div>
+          </div>
+          
+          <div class="glossary-item">
+            <div class="glossary-term">
+              <span>Open-edX</span>
+              <i data-lucide="chevron-down" class="h-5 w-5"></i>
+            </div>
+            <div class="glossary-definition">
+              <p><strong>Open-source Education Platform</strong>. Plataforma educativa de código abierto usada por MADFAM para su academia de formación.</p>
+              <p class="text-sm text-text-secondary mt-2">Uso: "Estamos migrando nuestros cursos a Open-edX para mayor escalabilidad".</p>
+            </div>
+          </div>
+          
+          <div class="glossary-item">
+            <div class="glossary-term">
+              <span>n8n</span>
+              <i data-lucide="chevron-down" class="h-5 w-5"></i>
+            </div>
+            <div class="glossary-definition">
+              <p><strong>Node Workflow Automation</strong>. Herramienta de automatización de flujos de trabajo basada en nodos para integrar sistemas.</p>
+              <p class="text-sm text-text-secondary mt-2">Uso: "Usamos n8n para automatizar el acceso a cursos tras la compra".</p>
+            </div>
+          </div>
+          
+          <div class="glossary-item">
+            <div class="glossary-term">
+              <span>RAG</span>
+              <i data-lucide="chevron-down" class="h-5 w-5"></i>
+            </div>
+            <div class="glossary-definition">
+              <p><strong>Retrieval-Augmented Generation</strong>. Técnica de IA que combina la recuperación de información con generación de contenido.</p>
+              <p class="text-sm text-text-secondary mt-2">Uso: "PENNY usa RAG para proporcionar respuestas contextualizadas sobre nuestros productos".</p>
+            </div>
+          </div>
+          
+          <div class="glossary-item">
+            <div class="glossary-term">
+              <span>SGC</span>
+              <i data-lucide="chevron-down" class="h-5 w-5"></i>
+            </div>
+            <div class="glossary-definition">
+              <p><strong>Sistema de Gestión de Calidad</strong>. Conjunto de normas y procesos para asegurar la calidad en productos y servicios.</p>
+              <p class="text-sm text-text-secondary mt-2">Uso: "Estamos implementando un SGC para estandarizar nuestros procesos".</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="glossary-column">
+          <!-- Glosario segunda columna -->
+          <div class="glossary-item">
+            <div class="glossary-term">
+              <span>KPI</span>
+              <i data-lucide="chevron-down" class="h-5 w-5"></i>
+            </div>
+            <div class="glossary-definition">
+              <p><strong>Key Performance Indicator</strong>. Métricas cuantificables que evalúan el éxito en objetivos organizacionales específicos.</p>
+              <p class="text-sm text-text-secondary mt-2">Uso: "El KPI principal para esta fase es alcanzar un EBITDA positivo".</p>
+            </div>
+          </div>
+          
+          <div class="glossary-item">
+            <div class="glossary-term">
+              <span>NPS</span>
+              <i data-lucide="chevron-down" class="h-5 w-5"></i>
+            </div>
+            <div class="glossary-definition">
+              <p><strong>Net Promoter Score</strong>. Índice que mide la disposición de clientes a recomendar productos o servicios a otros.</p>
+              <p class="text-sm text-text-secondary mt-2">Uso: "Nuestro NPS de 58 indica que tenemos más promotores que detractores".</p>
+            </div>
+          </div>
+          
+          <div class="glossary-item">
+            <div class="glossary-term">
+              <span>CAC</span>
+              <i data-lucide="chevron-down" class="h-5 w-5"></i>
+            </div>
+            <div class="glossary-definition">
+              <p><strong>Customer Acquisition Cost</strong>. Costo promedio de adquirir un nuevo cliente, incluyendo marketing y ventas.</p>
+              <p class="text-sm text-text-secondary mt-2">Uso: "Debemos mantener el CAC por debajo del 30% del valor del producto".</p>
+            </div>
+          </div>
+          
+          <div class="glossary-item">
+            <div class="glossary-term">
+              <span>EBITDA</span>
+              <i data-lucide="chevron-down" class="h-5 w-5"></i>
+            </div>
+            <div class="glossary-definition">
+              <p><strong>Earnings Before Interest, Taxes, Depreciation, and Amortization</strong>. Indicador financiero de rentabilidad operativa.</p>
+              <p class="text-sm text-text-secondary mt-2">Uso: "El EBITDA positivo indica que el negocio es rentable en su operación básica".</p>
+            </div>
+          </div>
+          
+          <div class="glossary-item">
+            <div class="glossary-term">
+              <span>MVP</span>
+              <i data-lucide="chevron-down" class="h-5 w-5"></i>
+            </div>
+            <div class="glossary-definition">
+              <p><strong>Minimum Viable Product</strong>. Versión inicial de un producto con funciones suficientes para validar ideas con clientes tempranos.</p>
+              <p class="text-sm text-text-secondary mt-2">Uso: "Lanzaremos un MVP de la plataforma para obtener feedback inicial".</p>
+            </div>
+          </div>
+          
+          <div class="glossary-item">
+            <div class="glossary-term">
+              <span>CTA</span>
+              <i data-lucide="chevron-down" class="h-5 w-5"></i>
+            </div>
+            <div class="glossary-definition">
+              <p><strong>Call To Action</strong>. Elemento de diseño que motiva al usuario a realizar una acción específica como comprar o registrarse.</p>
+              <p class="text-sm text-text-secondary mt-2">Uso: "Optimizamos el CTA principal y las conversiones aumentaron un 25%".</p>
+            </div>
+          </div>
+          
+          <div class="glossary-item">
+            <div class="glossary-term">
+              <span>OKR</span>
+              <i data-lucide="chevron-down" class="h-5 w-5"></i>
+            </div>
+            <div class="glossary-definition">
+              <p><strong>Objectives and Key Results</strong>. Marco para definir objetivos y resultados medibles para seguir el progreso.</p>
+              <p class="text-sm text-text-secondary mt-2">Uso: "Los OKRs trimestrales nos ayudan a mantener el enfoque en prioridades clave".</p>
+            </div>
+          </div>
+          
+          <div class="glossary-item">
+            <div class="glossary-term">
+              <span>GTD</span>
+              <i data-lucide="chevron-down" class="h-5 w-5"></i>
+            </div>
+            <div class="glossary-definition">
+              <p><strong>Getting Things Done</strong>. Metodología de gestión de tareas y productividad personal creada por David Allen.</p>
+              <p class="text-sm text-text-secondary mt-2">Uso: "Aplicamos principios GTD en nuestra lista de tareas Next-Action".</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Kickstarter Section -->
+  <section id="kickstarter" class="section">
+    <div class="container mx-auto px-4">
+      <h2 class="section-title">Sección Kick-starter</h2>
+      <p class="mb-8 text-text-secondary">Impulsa tu camino a COO con estos paquetes especiales de formación</p>
+      
+      <div class="mb-10">
+        <h3 class="font-bold mb-2">Progreso de Campaña</h3>
+        <div class="flex items-center justify-between text-sm mb-1">
+          <span>$45,000 MXN</span>
+          <span>Meta: $70,000 MXN</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-bar-inner" style="width:64%"></div>
+        </div>
+        <p class="text-xs text-text-secondary mt-1">64% completado - 14 días restantes</p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Paquete 1 -->
+        <div class="kickstarter-package">
+          <div class="bg-amarilloSolar inline-block px-3 py-1 rounded text-grisObsidiana text-sm font-bold mb-4">Early-Bird</div>
+          <h3 class="text-xl font-bold mb-2">Paquete Básico</h3>
+          <p class="text-2xl font-bold mb-4">$1,250 <span class="text-sm text-text-secondary">MXN</span></p>
+          <ul class="space-y-3 mb-6">
+            <li class="flex items-center">
+              <i data-lucide="check" class="h-5 w-5 text-verdeSostenible mr-2"></i>
+              <span>Acceso a 2 cursos introductorios</span>
+            </li>
+            <li class="flex items-center">
+              <i data-lucide="check" class="h-5 w-5 text-verdeSostenible mr-2"></i>
+              <span>Plantillas de KPIs iniciales</span>
+            </li>
+            <li class="flex items-center">
+              <i data-lucide="check" class="h-5 w-5 text-verdeSostenible mr-2"></i>
+              <span>Sesión grupal mensual</span>
+            </li>
+          </ul>
+          <button class="btn btn-outline w-full">Seleccionar</button>
+        </div>
+        
+        <!-- Paquete 2 -->
+        <div class="kickstarter-package">
+          <div class="bg-azulTecnologico inline-block px-3 py-1 rounded text-white text-sm font-bold mb-4">Estándar</div>
+          <h3 class="text-xl font-bold mb-2">Paquete Avanzado</h3>
+          <p class="text-2xl font-bold mb-4">$2,500 <span class="text-sm text-text-secondary">MXN</span></p>
+          <ul class="space-y-3 mb-6">
+            <li class="flex items-center">
+              <i data-lucide="check" class="h-5 w-5 text-verdeSostenible mr-2"></i>
+              <span>Acceso a 5 cursos completos</span>
+            </li>
+            <li class="flex items-center">
+              <i data-lucide="check" class="h-5 w-5 text-verdeSostenible mr-2"></i>
+              <span>Dashboard personalizado</span>
+            </li>
+            <li class="flex items-center">
+              <i data-lucide="check" class="h-5 w-5 text-verdeSostenible mr-2"></i>
+              <span>2 sesiones privadas</span>
+            </li>
+            <li class="flex items-center">
+              <i data-lucide="check" class="h-5 w-5 text-verdeSostenible mr-2"></i>
+              <span>Acceso a comunidad premium</span>
+            </li>
+          </ul>
+          <button class="btn btn-primary w-full">Seleccionar</button>
+        </div>
+        
+        <!-- Paquete 3 -->
+        <div class="kickstarter-package">
+          <div class="bg-purpuraCreativo inline-block px-3 py-1 rounded text-white text-sm font-bold mb-4">Full-Bundle</div>
+          <h3 class="text-xl font-bold mb-2">Paquete Élite</h3>
+          <p class="text-2xl font-bold mb-4">$5,000 <span class="text-sm text-text-secondary">MXN</span></p>
+          <ul class="space-y-3 mb-6">
+            <li class="flex items-center">
+              <i data-lucide="check" class="h-5 w-5 text-verdeSostenible mr-2"></i>
+              <span>Acceso a todos los cursos</span>
+            </li>
+            <li class="flex items-center">
+              <i data-lucide="check" class="h-5 w-5 text-verdeSostenible mr-2"></i>
+              <span>Mentoría personalizada</span>
+            </li>
+            <li class="flex items-center">
+              <i data-lucide="check" class="h-5 w-5 text-verdeSostenible mr-2"></i>
+              <span>Acceso a herramientas premium</span>
+            </li>
+            <li class="flex items-center">
+              <i data-lucide="check" class="h-5 w-5 text-verdeSostenible mr-2"></i>
+              <span>Certificaciones incluidas</span>
+            </li>
+            <li class="flex items-center">
+              <i data-lucide="check" class="h-5 w-5 text-verdeSostenible mr-2"></i>
+              <span>Fast-track para posición COO</span>
+            </li>
+          </ul>
+          <button class="btn btn-secondary w-full">Seleccionar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-card text-text-secondary py-12">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div>
+          <div class="flex items-center space-x-2 mb-4">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="2" width="8" height="8" fill="#FFC107" rx="2"/>
+              <rect x="14" y="2" width="8" height="8" fill="#4CAF50" rx="2"/>
+              <rect x="2" y="14" width="8" height="8" fill="#2196F3" rx="2"/>
+              <rect x="14" y="14" width="8" height="8" fill="#663399" rx="2"/>
+            </svg>
+            <span class="font-bold text-xl text-text">MADFAM</span>
+          </div>
+          <p class="mb-4">Manufactura Aditiva, Digitalización y Fabricación Avanzada Multimaterial</p>
+          <p>&copy; 2025 MADFAM. Todos los derechos reservados.</p>
+        </div>
+        <div>
+          <h4 class="text-lg font-bold mb-4 text-text">Enlaces Rápidos</h4>
+          <ul class="space-y-2">
+            <li><a href="#que-es-madfam" class="hover:text-verdeSostenible transition-colors">¿Qué es MADFAM?</a></li>
+            <li><a href="#tu-rol" class="hover:text-verdeSostenible transition-colors">Tu Rol Evolutivo</a></li>
+            <li><a href="#timeline" class="hover:text-verdeSostenible transition-colors">Timeline</a></li>
+            <li><a href="#kpis" class="hover:text-verdeSostenible transition-colors">Panel OKR & KPI</a></li>
+            <li><a href="#curriculum" class="hover:text-verdeSostenible transition-colors">Curriculum Vivo</a></li>
+            <li><a href="#glosario" class="hover:text-verdeSostenible transition-colors">Glosario</a></li>
+            <li><a href="#kickstarter" class="hover:text-verdeSostenible transition-colors">Kickstarter</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-lg font-bold mb-4 text-text">Meta</h4>
+          <p class="mb-4">Versión del panel: 1.0.0</p>
+          <p class="mb-4">Licencia: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" class="text-verdeSostenible">CC-BY</a></p>
+          <p><a href="https://github.com/MADFAM/road-to-coo" target="_blank" class="text-verdeSostenible flex items-center">
+            <i data-lucide="github" class="mr-2"></i>
+            Ver en GitHub
+          </a></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- To-Do Sidebar -->
+  <div class="todo-overlay" id="todoOverlay"></div>
+  <div class="todo-sidebar" id="todoSidebar">
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="font-bold text-xl">Tareas Pendientes</h3>
+      <button id="closeTodoBtn">
+        <i data-lucide="x" class="h-6 w-6"></i>
+      </button>
+    </div>
+    
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center space-x-2">
+        <span class="text-sm font-semibold">Progreso</span>
+        <span id="todoProgress" class="text-xs bg-verdeSostenible text-white px-2 py-1 rounded">0/0</span>
+      </div>
+      <div class="dropdown">
+        <button class="text-sm flex items-center">
+          <span id="todoFilterText">Todas</span>
+          <i data-lucide="chevron-down" class="h-4 w-4 ml-1"></i>
+        </button>
+        <div class="dropdown-content" id="todoFilterOptions">
+          <a href="#" data-filter="all">Todas</a>
+          <a href="#" data-filter="pending">Pendientes</a>
+          <a href="#" data-filter="completed">Completadas</a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="progress-bar mb-4">
+      <div class="progress-bar-inner" id="todoProgressBar" style="width:0%"></div>
+    </div>
+    
+    <div id="todoList" class="space-y-2 mb-4 overflow-y-auto max-h-[60vh]">
+      <!-- To-Do Items will be added here dynamically -->
+    </div>
+    
+    <div class="mt-4">
+      <button id="addTodoBtn" class="btn btn-outline w-full">
+        <i data-lucide="plus" class="h-5 w-5"></i>
+        Añadir Tarea
+      </button>
+    </div>
+  </div>
+
+  <!-- Floating Nav Button -->
+  <div class="floating-nav">
+    <div class="floating-nav-btn" id="floatingNavBtn">
+      <i data-lucide="list-todo" class="h-6 w-6"></i>
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <!-- Add Hito Modal -->
+  <div class="modal" id="addHitoModal">
+    <div class="modal-content">
+      <span class="modal-close" id="closeHitoModal">&times;</span>
+      <h3 class="font-bold text-xl mb-6">Añadir Nuevo Hito</h3>
+      <form id="addHitoForm">
+        <div class="form-group">
+          <label class="form-label" for="hitoTitle">Título del Hito</label>
+          <input type="text" id="hitoTitle" class="form-input" placeholder="Ej: Lanzamiento de nueva plataforma" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="hitoWeek">Semana Objetivo</label>
+          <input type="number" id="hitoWeek" class="form-input" placeholder="Ej: 45" min="1" max="260" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="hitoType">Tipo</label>
+          <select id="hitoType" class="form-select" required>
+            <option value="operativo">Operativo</option>
+            <option value="business">Business Development</option>
+            <option value="educativo">Educativo</option>
+            <option value="tecnologico">Tecnológico</option>
+            <option value="financiero">Financiero</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="hitoDescription">Descripción</label>
+          <textarea id="hitoDescription" class="form-textarea" placeholder="Describe brevemente el hito..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="hitoKPI">KPI Asociado</label>
+          <input type="text" id="hitoKPI" class="form-input" placeholder="Ej: 1000 usuarios registrados" required>
+
+        </div>
+        <div class="mt-6 flex justify-end">
+          <button type="button" id="cancelHitoBtn" class="btn btn-outline mr-3">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Añadir Hito</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Add Task Modal -->
+  <div class="modal" id="addTaskModal">
+    <div class="modal-content">
+      <span class="modal-close" id="closeTaskModal">&times;</span>
+      <h3 class="font-bold text-xl mb-6">Añadir Nueva Tarea</h3>
+      <form id="addTaskForm">
+        <div class="form-group">
+          <label class="form-label" for="taskTitle">Título de la Tarea</label>
+          <input type="text" id="taskTitle" class="form-input" placeholder="Ej: Configurar dominio en Porkbun" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="taskDescription">Descripción (opcional)</label>
+          <textarea id="taskDescription" class="form-textarea" placeholder="Detalles adicionales sobre la tarea..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="taskPriority">Prioridad</label>
+          <select id="taskPriority" class="form-select">
+            <option value="alta">Alta</option>
+            <option value="media" selected>Media</option>
+            <option value="baja">Baja</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="taskDueDate">Fecha límite</label>
+          <input type="date" id="taskDueDate" class="form-input">
+        </div>
+        <div class="mt-6 flex justify-end">
+          <button type="button" id="cancelTaskBtn" class="btn btn-outline mr-3">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Añadir Tarea</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Add Certificate Modal -->
+  <div class="modal" id="addCertificateModal">
+    <div class="modal-content">
+      <span class="modal-close" id="closeCertificateModal">&times;</span>
+      <h3 class="font-bold text-xl mb-6">Añadir Certificado / Skill</h3>
+      <form id="addCertificateForm">
+        <div class="form-group">
+          <label class="form-label" for="certName">Nombre del Skill / Certificado</label>
+          <input type="text" id="certName" class="form-input" placeholder="Ej: Digital Marketing Specialization" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="certLevel">Nivel / Emisor</label>
+          <input type="text" id="certLevel" class="form-input" placeholder="Ej: Avanzado / Google" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="certDate">Fecha de Obtención</label>
+          <input type="text" id="certDate" class="form-input" placeholder="Ej: Junio 2025" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="certEvidence">Enlace a Evidencia</label>
+          <input type="text" id="certEvidence" class="form-input" placeholder="Ej: https://ejemplo.com/certificado.pdf">
+        </div>
+        <div class="mt-6 flex justify-end">
+          <button type="button" id="cancelCertificateBtn" class="btn btn-outline mr-3">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Añadir Certificado</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Update JSON Modal -->
+  <div class="modal" id="updateJsonModal">
+    <div class="modal-content">
+      <span class="modal-close" id="closeJsonModal">&times;</span>
+      <h3 class="font-bold text-xl mb-6">Actualizar Datos JSON</h3>
+      <div class="form-group">
+        <label class="form-label" for="jsonData">Datos JSON</label>
+        <textarea id="jsonData" class="form-textarea" rows="10" placeholder="Pega aquí tu JSON actualizado..."></textarea>
+      </div>
+      <div class="mt-6 flex justify-end">
+        <button type="button" id="cancelJsonBtn" class="btn btn-outline mr-3">Cancelar</button>
+        <button type="button" id="submitJsonBtn" class="btn btn-primary">Actualizar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // Initialize Lucide Icons
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+    });
+    
+    // Sample Data
+    const mockData = {
+      ingresos: {
+        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+        data: [0, 0, 15000, 22000, 35000, 42000]
+      },
+      cac: {
+        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+        data: [0, 0, 45, 38, 33, 28]
+      },
+      nps: {
+        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+        data: [0, 0, 35, 42, 48, 52]
+      },
+      uptime: {
+        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+        data: [0, 0, 99.2, 99.5, 99.8, 99.9]
+      }
+    };
+    
+    // Initial Tasks
+    const initialTasks = [
+      {
+        id: 'task-1',
+        title: 'Contratar Contabo para Open edX',
+        description: 'Plan Runway para garantizar escalabilidad',
+        priority: 'alta',
+        dueDate: '2025-05-10',
+        completed: true
+      },
+      {
+        id: 'task-2',
+        title: 'Configurar dominio en Porkbun',
+        description: 'Dominio principal y subdominios para LMS y WooCommerce',
+        priority: 'alta',
+        dueDate: '2025-05-12',
+        completed: true
+      },
+      {
+        id: 'task-3',
+        title: 'Instalar Open edX',
+        description: 'Seguir guía de instalación oficial y configurar SMTP',
+        priority: 'alta',
+        dueDate: '2025-05-15',
+        completed: false
+      },
+      {
+        id: 'task-4',
+        title: 'Instalar WordPress + WooCommerce',
+        description: 'Usar tema Astra y plugins esenciales',
+        priority: 'alta',
+        dueDate: '2025-05-18',
+        completed: false
+      },
+      {
+        id: 'task-5',
+        title: 'Configurar Stripe y BBVA PyME',
+        description: 'Integración de métodos de pago',
+        priority: 'media',
+        dueDate: '2025-05-22',
+        completed: false
+      },
+      {
+        id: 'task-6',
+        title: 'Crear productos en WooCommerce',
+        description: 'Catálogo inicial con 5 productos',
+        priority: 'media',
+        dueDate: '2025-05-28',
+        completed: false
+      },
+      {
+        id: 'task-7',
+        title: 'Diseñar covers para productos',
+        description: 'Usar Canva con plantilla MADFAM',
+        priority: 'baja',
+        dueDate: '2025-06-05',
+        completed: false
+      }
+    ];
+    
+    // DOM Elements
+    const todoBtn = document.getElementById('todoBtn');
+    const closeTodoBtn = document.getElementById('closeTodoBtn');
+    const todoSidebar = document.getElementById('todoSidebar');
+    const todoOverlay = document.getElementById('todoOverlay');
+    const todoList = document.getElementById('todoList');
+    const todoProgress = document.getElementById('todoProgress');
+    const todoProgressBar = document.getElementById('todoProgressBar');
+    const addTodoBtn = document.getElementById('addTodoBtn');
+    const floatingNavBtn = document.getElementById('floatingNavBtn');
+    
+    const addHitoBtn = document.getElementById('addHitoBtn');
+    const addHitoModal = document.getElementById('addHitoModal');
+    const closeHitoModal = document.getElementById('closeHitoModal');
+    const cancelHitoBtn = document.getElementById('cancelHitoBtn');
+    const addHitoForm = document.getElementById('addHitoForm');
+    
+    const addTaskModal = document.getElementById('addTaskModal');
+    const closeTaskModal = document.getElementById('closeTaskModal');
+    const cancelTaskBtn = document.getElementById('cancelTaskBtn');
+    const addTaskForm = document.getElementById('addTaskForm');
+    
+    const addCertificateBtn = document.getElementById('addCertificateBtn');
+    const addCertificateModal = document.getElementById('addCertificateModal');
+    const closeCertificateModal = document.getElementById('closeCertificateModal');
+    const cancelCertificateBtn = document.getElementById('cancelCertificateBtn');
+    const addCertificateForm = document.getElementById('addCertificateForm');
+    
+    const updateJsonBtn = document.getElementById('updateJsonBtn');
+    const updateJsonModal = document.getElementById('updateJsonModal');
+    const closeJsonModal = document.getElementById('closeJsonModal');
+    const cancelJsonBtn = document.getElementById('cancelJsonBtn');
+    const submitJsonBtn = document.getElementById('submitJsonBtn');
+    const jsonDataInput = document.getElementById('jsonData');
+    
+    // Initialize Swiper
+    document.addEventListener('DOMContentLoaded', () => {
+      const roleSwiper = new Swiper('.roleSwiper', {
+        slidesPerView: 1,
+        spaceBetween: 30,
+        pagination: {
+          el: '.swiper-pagination',
+          clickable: true
+        },
+        breakpoints: {
+          640: {
+            slidesPerView: 2,
+            spaceBetween: 20
+          },
+          1024: {
+            slidesPerView: 4,
+            spaceBetween: 30
+          }
+        }
+      });
+    });
+    
+    // Initialize Charts
+    document.addEventListener('DOMContentLoaded', () => {
+      const createLineChart = (elementId, data, label, color) => {
+        const ctx = document.getElementById(elementId).getContext('2d');
+        return new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: data.labels,
+            datasets: [{
+              label: label,
+              data: data.data,
+              backgroundColor: color + '20', // 20% opacity
+              borderColor: color,
+              tension: 0.4,
+              fill: true
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: {
+                  color: 'rgba(255, 255, 255, 0.1)'
+                },
+                ticks: {
+                  color: '#aaaaaa'
+                }
+              },
+              x: {
+                grid: {
+                  color: 'rgba(255, 255, 255, 0.1)'
+                },
+                ticks: {
+                  color: '#aaaaaa'
+                }
+              }
+            },
+            plugins: {
+              legend: {
+                labels: {
+                  color: '#e0e0e0'
+                }
+              }
+            }
+          }
+        });
+      };
+      
+      createLineChart('ingresos-chart', mockData.ingresos, 'Ingresos (MXN)', '#4CAF50');
+      createLineChart('cac-chart', mockData.cac, 'CAC (%)', '#FFC107');
+      createLineChart('nps-chart', mockData.nps, 'NPS', '#2196F3');
+      createLineChart('uptime-chart', mockData.uptime, 'Uptime (%)', '#663399');
+    });
+    
+    // Initialize To-Do List
+    const initTodoList = () => {
+      // Get tasks from localStorage or use initialTasks
+      const tasks = JSON.parse(localStorage.getItem('madfam-tasks')) || initialTasks;
+      
+      // Save tasks to localStorage if not already there
+      if (!localStorage.getItem('madfam-tasks')) {
+        localStorage.setItem('madfam-tasks', JSON.stringify(initialTasks));
+      }
+      
+      // Update task list
+      updateTaskList(tasks);
+    };
+    
+    // Update task list UI
+    const updateTaskList = (tasks, filter = 'all') => {
+      // Clear current list
+      todoList.innerHTML = '';
+      
+      // Filter tasks if needed
+      let filteredTasks = tasks;
+      if (filter === 'pending') {
+        filteredTasks = tasks.filter(task => !task.completed);
+      } else if (filter === 'completed') {
+        filteredTasks = tasks.filter(task => task.completed);
+      }
+      
+      // Add tasks to the list
+      filteredTasks.forEach(task => {
+        const taskElement = document.createElement('div');
+        taskElement.className = `todo-item ${task.completed ? 'completed' : ''}`;
+        taskElement.dataset.id = task.id;
+        
+        // Priority color
+        let priorityColor = '#4CAF50'; // Default - medium
+        if (task.priority === 'alta') priorityColor = '#cf6679';
+        if (task.priority === 'baja') priorityColor = '#2196F3';
+        
+        taskElement.innerHTML = `
+          <div class="flex items-start">
+            <input type="checkbox" ${task.completed ? 'checked' : ''} class="mt-1 mr-2">
+            <div>
+              <p class="font-semibold">${task.title}</p>
+              <p class="text-xs text-text-secondary">${task.description}</p>
+              <div class="flex items-center mt-1 text-xs">
+                <span class="mr-3" style="color: ${priorityColor};">
+                  <i data-lucide="flag" class="h-3 w-3 inline"></i>
+                  ${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
+                </span>
+                <span>
+                  <i data-lucide="calendar" class="h-3 w-3 inline"></i>
+                  ${task.dueDate}
+                </span>
+              </div>
+            </div>
+          </div>
+          <button class="delete-task">
+            <i data-lucide="trash-2" class="h-4 w-4"></i>
+          </button>
+        `;
+        
+        // Add task element
+        todoList.appendChild(taskElement);
+        
+        // Checkbox event
+        const checkbox = taskElement.querySelector('input[type="checkbox"]');
+        checkbox.addEventListener('change', () => {
+          toggleTaskComplete(task.id);
+        });
+        
+        // Delete button event
+        const deleteBtn = taskElement.querySelector('.delete-task');
+        deleteBtn.addEventListener('click', () => {
+          deleteTask(task.id);
+        });
+      });
+      
+      // Update icons
+      lucide.createIcons();
+      
+      // Update progress
+      updateTaskProgress(tasks);
+    };
+    
+    // Update task completion status
+    const toggleTaskComplete = (taskId) => {
+      const tasks = JSON.parse(localStorage.getItem('madfam-tasks')) || [];
+      const taskIndex = tasks.findIndex(task => task.id === taskId);
+      
+      if (taskIndex !== -1) {
+        tasks[taskIndex].completed = !tasks[taskIndex].completed;
+        localStorage.setItem('madfam-tasks', JSON.stringify(tasks));
+        updateTaskList(tasks);
+      }
+    };
+    
+    // Delete task
+    const deleteTask = (taskId) => {
+      const tasks = JSON.parse(localStorage.getItem('madfam-tasks')) || [];
+      const newTasks = tasks.filter(task => task.id !== taskId);
+      localStorage.setItem('madfam-tasks', JSON.stringify(newTasks));
+      updateTaskList(newTasks);
+    };
+    
+    // Update task progress
+    const updateTaskProgress = (tasks) => {
+      const total = tasks.length;
+      const completed = tasks.filter(task => task.completed).length;
+      const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+      
+      todoProgress.textContent = `${completed}/${total}`;
+      todoProgressBar.style.width = `${percentage}%`;
+    };
+    
+    // Add new task
+    const addNewTask = (title, description, priority, dueDate) => {
+      const tasks = JSON.parse(localStorage.getItem('madfam-tasks')) || [];
+      const newTask = {
+        id: `task-${Date.now()}`,
+        title,
+        description,
+        priority,
+        dueDate,
+        completed: false
+      };
+      
+      tasks.push(newTask);
+      localStorage.setItem('madfam-tasks', JSON.stringify(tasks));
+      updateTaskList(tasks);
+    };
+    
+    // Add certificate
+    const addNewCertificate = (name, level, date, evidence) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td contenteditable="true">${name}</td>
+        <td contenteditable="true">${level}</td>
+        <td contenteditable="true">${date}</td>
+        <td contenteditable="true">
+          <a href="${evidence || '#'}" class="text-verdeSostenible" ${evidence ? 'target="_blank"' : ''}>
+            Ver Certificado
+          </a>
+        </td>
+      `;
+      
+      document.getElementById('cvTableBody').appendChild(tr);
+    };
+    
+    // Event Listeners
+    todoBtn.addEventListener('click', () => {
+      todoSidebar.classList.add('open');
+      todoOverlay.classList.add('active');
+    });
+    
+    floatingNavBtn.addEventListener('click', () => {
+      todoSidebar.classList.add('open');
+      todoOverlay.classList.add('active');
+    });
+    
+    closeTodoBtn.addEventListener('click', () => {
+      todoSidebar.classList.remove('open');
+      todoOverlay.classList.remove('active');
+    });
+    
+    todoOverlay.addEventListener('click', () => {
+      todoSidebar.classList.remove('open');
+      todoOverlay.classList.remove('active');
+    });
+    
+    // Todo Filter
+    document.querySelectorAll('#todoFilterOptions a').forEach(option => {
+      option.addEventListener('click', (e) => {
+        e.preventDefault();
+        const filter = e.target.dataset.filter;
+        document.getElementById('todoFilterText').textContent = e.target.textContent;
+        const tasks = JSON.parse(localStorage.getItem('madfam-tasks')) || [];
+        updateTaskList(tasks, filter);
+      });
+    });
+    
+    // Add Todo Button
+    addTodoBtn.addEventListener('click', () => {
+      addTaskModal.classList.add('active');
+    });
+    
+    // Close Task Modal
+    closeTaskModal.addEventListener('click', () => {
+      addTaskModal.classList.remove('active');
+    });
+    
+    cancelTaskBtn.addEventListener('click', () => {
+      addTaskModal.classList.remove('active');
+    });
+    
+    // Add Task Form Submit
+    addTaskForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const title = document.getElementById('taskTitle').value;
+      const description = document.getElementById('taskDescription').value || '';
+      const priority = document.getElementById('taskPriority').value;
+      const dueDate = document.getElementById('taskDueDate').value || new Date().toISOString().split('T')[0];
+      
+      addNewTask(title, description, priority, dueDate);
+      addTaskForm.reset();
+      addTaskModal.classList.remove('active');
+    });
+    
+    // Add Hito Button
+    addHitoBtn.addEventListener('click', () => {
+      addHitoModal.classList.add('active');
+    });
+    
+    // Close Hito Modal
+    closeHitoModal.addEventListener('click', () => {
+      addHitoModal.classList.remove('active');
+    });
+    
+    cancelHitoBtn.addEventListener('click', () => {
+      addHitoModal.classList.remove('active');
+    });
+    
+    // Add Hito Form Submit
+    addHitoForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const title = document.getElementById('hitoTitle').value;
+      const week = document.getElementById('hitoWeek').value;
+      const type = document.getElementById('hitoType').value;
+      const description = document.getElementById('hitoDescription').value;
+      const kpi = document.getElementById('hitoKPI').value;
+      
+      let trackId = 'timeline-track-1';
+      if (week > 26 && week <= 104) {
+        trackId = 'timeline-track-2';
+      } else if (week > 104) {
+        trackId = 'timeline-track-3';
+      }
+      
+      // Create new hito
+      const hitoElement = document.createElement('div');
+      hitoElement.className = 'timeline-item card';
+      hitoElement.innerHTML = `
+        <span class="text-xs text-text-secondary">Semana ${week}</span>
+        <h5 class="font-bold mb-2">${title}</h5>
+        <div class="flex items-center space-x-2 text-xs mb-2">
+          <span class="bg-verdeSostenible text-white px-2 py-1 rounded">${type}</span>
+        </div>
+        <p class="text-sm text-text-secondary mb-3">${description}</p>
+        <div class="tooltip">
+          <div class="flex items-center space-x-1 text-xs text-verdeSostenible">
+            <i data-lucide="target" class="h-4 w-4"></i>
+            <span>KPI: ${kpi}</span>
+          </div>
+          <span class="tooltip-text">Hito personalizado añadido por ti</span>
+        </div>
+      `;
+      
+      document.getElementById(trackId).appendChild(hitoElement);
+      lucide.createIcons();
+      
+      // Add as a task too
+      addNewTask(title, description, 'media', new Date().toISOString().split('T')[0]);
+      
+      // Close modal and reset
+      addHitoForm.reset();
+      addHitoModal.classList.remove('active');
+    });
+    
+    // Add Certificate Button
+    addCertificateBtn.addEventListener('click', () => {
+      addCertificateModal.classList.add('active');
+    });
+    
+    // Close Certificate Modal
+    closeCertificateModal.addEventListener('click', () => {
+      addCertificateModal.classList.remove('active');
+    });
+    
+    cancelCertificateBtn.addEventListener('click', () => {
+      addCertificateModal.classList.remove('active');
+    });
+    
+    // Add Certificate Form Submit
+    addCertificateForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const name = document.getElementById('certName').value;
+      const level = document.getElementById('certLevel').value;
+      const date = document.getElementById('certDate').value;
+      const evidence = document.getElementById('certEvidence').value;
+      
+      addNewCertificate(name, level, date, evidence);
+      
+      addCertificateForm.reset();
+      addCertificateModal.classList.remove('active');
+    });
+    
+    // Update JSON Button
+    updateJsonBtn.addEventListener('click', () => {
+      updateJsonModal.classList.add('active');
+      jsonDataInput.value = JSON.stringify(mockData, null, 2);
+    });
+    
+    // Close JSON Modal
+    closeJsonModal.addEventListener('click', () => {
+      updateJsonModal.classList.remove('active');
+    });
+    
+    cancelJsonBtn.addEventListener('click', () => {
+      updateJsonModal.classList.remove('active');
+    });
+    
+    // Submit JSON Button
+    submitJsonBtn.addEventListener('click', () => {
+      try {
+        const newData = JSON.parse(jsonDataInput.value);
+        // Validate the structure (basic validation)
+        if (newData.ingresos && newData.cac && newData.nps && newData.uptime) {
+          location.reload(); // In a real app, we'd update the charts without reloading
+        } else {
+          alert('El formato del JSON no es correcto. Por favor verifica la estructura.');
+        }
+      } catch (error) {
+        alert('Error al procesar el JSON: ' + error.message);
+      }
+    });
+    
+    // Glossary Item Toggle
+    document.querySelectorAll('.glossary-term').forEach(term => {
+      term.addEventListener('click', () => {
+        const glossaryItem = term.parentElement;
+        glossaryItem.classList.toggle('active');
+        const icon = term.querySelector('i');
+        if (glossaryItem.classList.contains('active')) {
+          icon.setAttribute('data-lucide', 'chevron-up');
+        } else {
+          icon.setAttribute('data-lucide', 'chevron-down');
+        }
+        lucide.createIcons();
+      });
+    });
+    
+    // Initialize GSAP animations
+    document.addEventListener('DOMContentLoaded', () => {
+      // Hero section animations
+      gsap.registerPlugin(ScrollTrigger);
+      
+      // Timeline animations
+      gsap.utils.toArray('.timeline-track').forEach(track => {
+        gsap.fromTo(
+          track.querySelectorAll('.timeline-item'),
+          { y: 30, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            stagger: 0.1,
+            duration: 0.8,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: track,
+              start: "top 80%",
+            }
+          }
+        );
+      });
+      
+      // Quote banner animations
+      gsap.utils.toArray('.quote-banner').forEach(banner => {
+        gsap.fromTo(
+          banner,
+          { backgroundPosition: "0% 50%" },
+          {
+            backgroundPosition: "100% 50%",
+            duration: 10,
+            ease: "none",
+            repeat: -1,
+            yoyo: true,
+          }
+        );
+      });
+    });
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      initTodoList();
+    });
+  </script>
+</body>
+</html>
